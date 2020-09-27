@@ -197,6 +197,11 @@ Array GDScriptTextDocument::completion(const Dictionary &p_params) {
 					break;
 			}
 
+			// TODO: this won't solve the issue if completion is triggered differently. Should instead look at code near the cursor to determine whether to quote.
+			if (params.context.triggerKind == lsp::CompletionTriggerKind::TriggerCharacter && (params.context.triggerCharacter == "\"" || params.context.triggerCharacter == "'")) {
+				item.label = item.label.unquote();
+			}
+
 			arr[i] = item.to_json();
 			i++;
 		}
@@ -269,6 +274,7 @@ Dictionary GDScriptTextDocument::resolve(const Dictionary &p_params) {
 	}
 
 	if ((item.kind == lsp::CompletionItemKind::Method || item.kind == lsp::CompletionItemKind::Function) && !item.label.ends_with("):")) {
+		// TODO: in order to fix https://github.com/godotengine/godot-vscode-plugin/issues/184 we need the source code as context so we can determine whether to add these parentheses
 		item.insertText = item.label + "(";
 		if (symbol && symbol->children.empty()) {
 			item.insertText += ")";
