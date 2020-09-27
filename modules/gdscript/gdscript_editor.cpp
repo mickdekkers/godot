@@ -38,6 +38,7 @@
 #ifdef TOOLS_ENABLED
 #include "editor/editor_file_system.h"
 #include "editor/editor_settings.h"
+#include "modules/gdscript/language_server/lsp.hpp"
 #endif
 
 void GDScriptLanguage::get_comment_delimiters(List<String> *p_delimiters) const {
@@ -495,6 +496,7 @@ struct GDScriptCompletionContext {
 	const GDScriptParser::ClassNode *_class;
 	const GDScriptParser::FunctionNode *function;
 	const GDScriptParser::BlockNode *block;
+	const lsp::CompletionContext *lsp_context;
 	Object *base;
 	String base_path;
 	int line;
@@ -504,6 +506,7 @@ struct GDScriptCompletionContext {
 			_class(NULL),
 			function(NULL),
 			block(NULL),
+			lsp_context(NULL),
 			base(NULL),
 			line(0),
 			depth(0) {}
@@ -2542,7 +2545,7 @@ static void _find_call_arguments(GDScriptCompletionContext &p_context, const GDS
 	r_forced = r_result.size() > 0;
 }
 
-Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, List<ScriptCodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint) {
+Error GDScriptLanguage::complete_code(const String &p_code, const String &p_path, Object *p_owner, const lsp::CompletionContext *lsp_context, List<ScriptCodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint) {
 
 	const String quote_style = EDITOR_DEF("text_editor/completion/use_single_quotes", false) ? "'" : "\"";
 

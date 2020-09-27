@@ -35,6 +35,7 @@
 #include "core/io/resource_saver.h"
 #include "core/script_language.h"
 #include "gdscript_function.h"
+#include "modules/gdscript/language_server/lsp.hpp"
 
 class GDScriptNativeClass : public Reference {
 
@@ -470,7 +471,7 @@ public:
 	virtual bool can_inherit_from_file() { return true; }
 	virtual int find_function(const String &p_function, const String &p_code) const;
 	virtual String make_function(const String &p_class, const String &p_name, const PoolStringArray &p_args) const;
-	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, List<ScriptCodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint);
+	virtual Error complete_code(const String &p_code, const String &p_path, Object *p_owner, const lsp::CompletionContext *lsp_context, List<ScriptCodeCompletionOption> *r_options, bool &r_forced, String &r_call_hint);
 #ifdef TOOLS_ENABLED
 	virtual Error lookup_code(const String &p_code, const String &p_symbol, const String &p_path, Object *p_owner, LookupResult &r_result);
 #endif
